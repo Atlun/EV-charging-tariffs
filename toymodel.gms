@@ -247,7 +247,7 @@ V_PEV_need.fx(timestep,trsp,priceareas) $ EV_home(timestep,trsp)=0;
 
 $if %RealBatteryCap%==yes V_PEV_storage.up(timestep,trsp,priceareas)=battery_capacity(trsp);
 $if %RealBatteryCap%==no V_PEV_storage.up(timestep,trsp,priceareas)=Batterysize;
-$if %Time_Differentiated%==no V_maxF_all.fx(month, priceareas)=0
+$if %Time_Differentiated%==no V_maxF_all.fx(month, priceareas)=0;
 
 
 EQU_totcost..
