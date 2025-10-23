@@ -36,8 +36,7 @@ Scalar
 TimestepsPerHour
 NumberOfCars
 DemandFactor;
-
-NumberOfCars = 154;
+NumberOfCars = 188;
 
 $ifThen %Temporal_Resolution% ==10_min
 TimestepsPerHour=6;
@@ -232,10 +231,10 @@ Annual_P_cost_common
 Beff_EV=0.95;
 El_cost=1;
 Batterysize=70; 
-Price_fastcharge=1;
+Price_fastcharge=0.56;
 *€/kWh
 Charge_Power=6.9;
-Fuse_cost=10;
+Fuse_cost=7.4;
 Monthly_P_cost_ind=Fuse_cost;
 Monthly_P_cost_common=Fuse_cost;
 Annual_P_cost=Fuse_cost*12;
