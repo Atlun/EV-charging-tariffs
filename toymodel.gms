@@ -340,6 +340,38 @@ option solver=gurobi
 
 Solve EV_charge using lp minimizing vtotcost;
 
+* First, declare the parameters (add this before the solve statement)
+Parameter Monthly_fuse_common(month, priceareas);
+Parameter Monthly_fuse_ind(month, priceareas, trsp);
+
+* Then after the solve, calculate the peak values correctly
+* For common peak (one value per month and pricearea)
+loop(month,
+    loop(priceareas,
+        Monthly_fuse_common(month, priceareas) = smax(timestep$(maptimestep2month(timestep, month)),
+            sum(trsp, V_PEVcharging_slow.l(timestep, trsp, priceareas)*kWhtokW) 
+            + residential_demand(timestep)/1000*NumberOfCars
+        );
+    );
+);
+
+* For individual peak (one value per month, pricearea, and trsp)
+loop(month,
+    loop(priceareas,
+        loop(trsp,
+            Monthly_fuse_ind(month, priceareas, trsp) = smax(timestep$(maptimestep2month(timestep, month)),
+                V_PEVcharging_slow.l(timestep, trsp, priceareas)*kWhtokW 
+                + residential_demand(timestep)/1000
+            );
+        );
+    );
+);
+
+* Display and export the results
+display Monthly_fuse_common, Monthly_fuse_ind;
+Execute_unload '%Casename%_M.gdx', Monthly_fuse_common, Monthly_fuse_ind;
+executeTool 'csvwrite id=Monthly_fuse_common file=%Casename%_common_peaks.csv';
+executeTool 'csvwrite id=Monthly_fuse_ind file=%Casename%_individual_peaks.csv';
 
 Execute_unload '%Casename%.gdx';
 *execute "gdxxrw %Casename%.gdx o=%Casename%.xlsx squeeze=0 var=V_PEV_need rng=Fast_charging!a1";
