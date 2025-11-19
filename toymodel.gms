@@ -5,9 +5,9 @@ $setglobal path "C:\Users\thelun\Documents\GAMS\EV charging"
 $setglobal Output_path "C:\Users\thelun\Documents\GAMS\EV charging"
 
 $setglobal Year "2023"
-$setglobal Temporal_Resolution "10_min"
 *Set temporal resolution to either "hours" or "10_min"
 $setglobal RealBatteryCap "yes"
+$setglobal Temporal_Resolution "15_min"
 * Set to real for estimated battery caps
 
 *Set the first two to yes to use tariffs
@@ -29,8 +29,6 @@ Sets
 priceareas
 /SE1, SE2, SE3, SE4/
 ;
-
-
 
 Scalar
 TimestepsPerHour
@@ -148,7 +146,7 @@ $include ./Battery_cap_15min_2.inc
 $endIf
 Sets
 *trsp(trsp_all) / b100, b102, b103 /
-*trsp(trsp_all) / b100, b102, b103 , b109,b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41, b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1 / 
+*trsp(trsp_all) / b100, b101, b102, b103, b105, b109, b10A, b10C, b10D, b10E, b10_1, b11, b110, b111, b113, b115, b11B, b12_1, b13, b14_2, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b23, b24, b26, b27, b29, b2A_1, b2C, b2E, b2F, b2_1 / 
 *trsp(trsp_all) / b100, b102, b103, b109, b10A, b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41, b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1 /
 *trsp(trsp_all) / b100, b102, b103, b109, b10A, b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41,  b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1, b50, b52, b55, b58, b59, b5B, b5C, b5_1,b63, b64, b65, b66, b6A, b6B, b6C, b6E, b70, b74, b75, b77, b78, b79, b7B, b7C, b7D, b7E, b7_1  /
 *trsp(trsp_all) / b100, b102, b103, b109, b10D, b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41, b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1, b50, b52, b55, b58, b59, b5B, b5C, b5_1, b63, b64, b65, b66, b6A, b6B, b6C, b6E, b70, b74, b75, b77, b78, b79, b7B, b7C, b7D, b7E, b7_1, b80, b87, b88, b8A, b8C, b8D, b8E, b90, b92, b95, b96, b97, b98, b99_1, b9A, b9C, b9D_1, b9E, b9F, b9_1, bA0, bA2, bA3, bA7, bA8, bAC, bAD, bAE, bA_1, bB3, bB4, bB5, bB6, bB7, bB8, bB9, bBB, bBD, bBF, bC0, bC2, bC5, bC8, bC9, bCA_1, bCD, bCF, bC_1, bD1, bD2, bD5, bD6, bD7, bD8, bD9, bDE, bDF, bE5, bE7, bE9, bEB, bF0, bF1, bF4, bF5, bF6, bF7, bF8, bF9, bFA, bFC  /
