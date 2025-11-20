@@ -16,6 +16,7 @@ $setglobal Monthly_Power_Cost "no"
 $setglobal Common_Power_Cost "no"           
 $setglobal Fixed_Common_Power "no"
 $setGlobal Time_Differentiated "no"
+$setGlobal Households "random"
 
 $setglobal Casename "Test_Realcap_%RealBatteryCap%_%Temporal_Resolution%_%Year%"
 
@@ -155,6 +156,16 @@ trsp(trsp_all) / b100, b101, b102, b103, b105, b109, b10A, b10C, b10D, b10E, b10
 *alias(trsp_all, trsp);
 ;
 
+Sets
+houses /DV1, DV2, DV3, EJ1, EJ2, EJ3, VP1, VP2, VP3, DVV1, DVV2, DVV3, APTEL1, APTEL2, APTEL3, APTEJ1, APTEJ2, APTEJ3/;
+
+Table HH_dem(timestep_all, houses)
+$include ./HH_dem_random_15min.inc
+;
+* Unit kWh
+HH_dem(timestep_all, houses)=HH_dem(timestep_all, houses)*TimestepsPerHour*1000;
+* Unit W
+
 Table epriceh(hours,priceareas) 
 $include ./eprice_priceareas_%year%.inc
 * €/MWh (unit conversion  for energy demand in in cost eq as energy in normally in kWh)
@@ -263,59 +274,59 @@ Variable
    
 
 Positive variables
-V_PEVcharging_slow (timestep,trsp,priceareas) charging of the vehicle battery [kWh per timestep]
-V_PEV_storage (timestep,trsp,priceareas) Storage level of the vehicle battery [kWh per timestep]
-V_PEV_need (timestep,trsp,priceareas) vehicle kilometers not met by charging [kWh per timestep]
-V_fuse(trsp,priceareas) fuse size [kW per pricearea]
-V_power_monthly(month,trsp,priceareas) monthly peak power consumption [kW per month]
-V_common_power(month, priceareas) common power consumption [kW per pricearea]
+V_PEVcharging_slow (timestep,trsp,priceareas,houses) charging of the vehicle battery [kWh per timestep]
+V_PEV_storage (timestep,trsp,priceareas,houses) Storage level of the vehicle battery [kWh per timestep]
+V_PEV_need (timestep,trsp,priceareas, houses) vehicle kilometers not met by charging [kWh per timestep]
+V_fuse(trsp,priceareas, houses) fuse size [kW per pricearea]
+V_power_monthly(month,trsp,priceareas,houses) monthly peak power consumption [kW per month]
+V_common_power(month, priceareas,houses) common power consumption [kW per pricearea]
 V_maxF_all(month, priceareas) common power consumption [kW per pricearea]
 ;
 
 
 Equations
 EQU_totcost
-EQU_EVstoragelevel(timestep,trsp,priceareas)
-EQU_fuse_need(timestep,trsp,priceareas)
-EQU_month_p_need(timestep,trsp,priceareas)
-EQU_common_power(timestep,priceareas)
+EQU_EVstoragelevel(timestep,trsp,priceareas, houses)
+EQU_fuse_need(timestep,trsp,priceareas, houses)
+EQU_month_p_need(timestep,trsp,priceareas, houses)
+EQU_common_power(timestep,priceareas,houses)
 EQU_maxfuse(timestep,priceareas)
 
 ;
 
-V_PEVcharging_slow.up(timestep,trsp,priceareas)=Charge_Power;
-V_PEVcharging_slow.fx(timestep,trsp,priceareas) $ (not(EV_home(timestep,trsp)))=0;
-V_PEV_need.fx(timestep,trsp,priceareas) $ EV_home(timestep,trsp)=0;
+V_PEVcharging_slow.up(timestep,trsp,priceareas,houses)=Charge_Power;
+V_PEVcharging_slow.fx(timestep,trsp,priceareas, houses) $ (not(EV_home(timestep,trsp)))=0;
+V_PEV_need.fx(timestep,trsp,priceareas,houses) $ EV_home(timestep,trsp)=0;
 
-$if %RealBatteryCap%==yes V_PEV_storage.up(timestep,trsp,priceareas)=battery_capacity(trsp);
-$if %RealBatteryCap%==no V_PEV_storage.up(timestep,trsp,priceareas)=Batterysize;
+$if %RealBatteryCap%==yes V_PEV_storage.up(timestep,trsp,priceareas, houses)=battery_capacity(trsp);
+$if %RealBatteryCap%==no V_PEV_storage.up(timestep,trsp,priceareas, houses)=Batterysize;
 $if %Time_Differentiated%==no V_maxF_all.fx(month, priceareas)=0;
 
 
 
 EQU_totcost..
 vtotcost =E= 
-    sum(priceareas, sum(trsp, 
-        sum(timestep, V_PEV_need(timestep,trsp,priceareas)*Price_fastcharge)  
-$if %Temporal_Resolution% == 10_min        + sum(hours, sum(timestep $ maptimestep2hour(timestep, hours), V_PEVcharging_slow(timestep,trsp,priceareas)) * ktoM  * epriceh(hours,priceareas))
-$if %Temporal_Resolution% == 15_min        + sum(hours, sum(timestep $ maptimestep2hour(timestep, hours), V_PEVcharging_slow(timestep,trsp,priceareas)) * ktoM  * epriceh(hours,priceareas))
-$if %Temporal_Resolution% == hours        + sum(timestep, V_PEVcharging_slow(timestep,trsp,priceareas) * ktoM * eprice(timestep,priceareas))
-        + V_fuse(trsp,priceareas) *Annual_P_cost  + sum(month, (V_power_monthly(month, trsp,priceareas))*Monthly_P_cost_ind+V_common_power(month, priceareas)*Monthly_P_cost_common )));
+    sum(houses, sum(priceareas, sum(trsp, 
+        sum(timestep, V_PEV_need(timestep,trsp,priceareas, houses)*Price_fastcharge)  
+$if %Temporal_Resolution% == 10_min        + sum(hours, sum(timestep $ maptimestep2hour(timestep, hours), V_PEVcharging_slow(timestep,trsp,priceareas, houses)) * ktoM  * epriceh(hours,priceareas))
+$if %Temporal_Resolution% == 15_min        + sum(hours, sum(timestep $ maptimestep2hour(timestep, hours), V_PEVcharging_slow(timestep,trsp,priceareas, houses)) * ktoM  * epriceh(hours,priceareas))
+$if %Temporal_Resolution% == hours        + sum(timestep, V_PEVcharging_slow(timestep,trsp,priceareas, houses) * ktoM * eprice(timestep,priceareas))
+        + V_fuse(trsp,priceareas,houses) *Annual_P_cost  + sum(month, (V_power_monthly(month,trsp,priceareas,houses))*Monthly_P_cost_ind+V_common_power(month,priceareas,houses)*Monthly_P_cost_common ))));
         
-EQU_EVstoragelevel(timestep,trsp,priceareas)..
-V_PEV_storage(timestep++1,trsp,priceareas) =E= V_PEV_storage(timestep,trsp,priceareas) + V_PEVcharging_slow(timestep,trsp,priceareas)*Beff_EV*EV_home(timestep,trsp) + EV_demand(timestep,trsp) * DemandFactor + V_PEV_need (timestep,trsp,priceareas)*Beff_EV*(1-EV_home(timestep,trsp));
+EQU_EVstoragelevel(timestep,trsp,priceareas, houses)..
+V_PEV_storage(timestep++1,trsp,priceareas, houses) =E= V_PEV_storage(timestep,trsp,priceareas, houses) + V_PEVcharging_slow(timestep,trsp,priceareas, houses)*Beff_EV*EV_home(timestep,trsp) + EV_demand(timestep,trsp) * DemandFactor + V_PEV_need (timestep,trsp,priceareas,houses)*Beff_EV*(1-EV_home(timestep,trsp));
 
-EQU_fuse_need(timestep,trsp,priceareas)..
-(V_PEVcharging_slow(timestep,trsp,priceareas)*kWhtokW + residential_demand(timestep)/1000)*time_diff(timestep) =L= V_fuse(trsp,priceareas);
+EQU_fuse_need(timestep,trsp,priceareas,houses)..
+(V_PEVcharging_slow(timestep,trsp,priceareas,houses)*kWhtokW + HH_dem(timestep,houses)/1000)*time_diff(timestep) =L= V_fuse(trsp,priceareas,houses);
 
-EQU_month_p_need(timestep, trsp,priceareas)..
-(V_PEVcharging_slow(timestep, trsp,priceareas)*kWhtokW + residential_demand(timestep)/1000)*time_diff(timestep) =L= sum(month $ maptimestep2month(timestep, month), V_power_monthly(month, trsp,priceareas));
+EQU_month_p_need(timestep, trsp,priceareas, houses)..
+(V_PEVcharging_slow(timestep,trsp,priceareas,houses)*kWhtokW + HH_dem(timestep,houses)/1000)*time_diff(timestep) =L= sum(month $ maptimestep2month(timestep, month), V_power_monthly(month, trsp,priceareas,houses));
 
-EQU_common_power(timestep,priceareas)..
-(sum(trsp, V_PEVcharging_slow(timestep, trsp,priceareas)*kWhtokW)+ residential_demand(timestep)/1000*NumberOfCars)*time_diff(timestep) =L=sum(month $ maptimestep2month(timestep, month), V_common_power(month, priceareas));
+EQU_common_power(timestep,priceareas,houses)..
+(sum(trsp, V_PEVcharging_slow(timestep, trsp,priceareas,houses)*kWhtokW)+ HH_dem(timestep, houses)*NumberOfCars/1000)*time_diff(timestep) =L=sum(month $ maptimestep2month(timestep, month), V_common_power(month, priceareas,houses));
 
 EQU_maxfuse(timestep,priceareas)..
-(sum(trsp, V_PEVcharging_slow(timestep, trsp,priceareas)*kWhtokW)+ residential_demand(timestep)/1000*NumberOfCars) =L=sum(month $ maptimestep2month(timestep, month), V_maxF_all(month, priceareas));
+sum(houses, (sum(trsp, V_PEVcharging_slow(timestep, trsp,priceareas,houses)*kWhtokW)+ HH_dem(timestep, houses)/1000)) =L=sum(month $ maptimestep2month(timestep, month), V_maxF_all(month, priceareas));
 
 
 Model EV_charge /
@@ -338,38 +349,47 @@ option solver=gurobi
 
 Solve EV_charge using lp minimizing vtotcost;
 
+$onText
 * First, declare the parameters (add this before the solve statement)
 Parameter Monthly_fuse_common(month, priceareas);
-Parameter Monthly_fuse_ind(month, priceareas, trsp);
+Parameter Monthly_fuse_ind(month, trsp, priceareas, houses);
 
-* Then after the solve, calculate the peak values correctly
-* For common peak (one value per month and pricearea)
-loop(month,
-    loop(priceareas,
-        Monthly_fuse_common(month, priceareas) = smax(timestep$(maptimestep2month(timestep, month)),
-            sum(trsp, V_PEVcharging_slow.l(timestep, trsp, priceareas)*kWhtokW) 
-            + residential_demand(timestep)/1000*NumberOfCars
-        );
-    );
-);
+Parameter HH_dem_t(timestep,houses);
+HH_dem_t(timestep,houses) = sum(timestep_all $ (ord(timestep_all) = ord(timestep)), HH_dem(timestep_all,houses));
 
-* For individual peak (one value per month, pricearea, and trsp)
+Scalar tmp_common, tmp_ind;
+
+* init outputs
+Monthly_fuse_common(month,priceareas) = 0;
+Monthly_fuse_ind(month,trsp,priceareas,houses) = 0;
+
 loop(month,
-    loop(priceareas,
-        loop(trsp,
-            Monthly_fuse_ind(month, priceareas, trsp) = smax(timestep$(maptimestep2month(timestep, month)),
-                V_PEVcharging_slow.l(timestep, trsp, priceareas)*kWhtokW 
-                + residential_demand(timestep)/1000
-            );
-        );
-    );
-);
+  loop(priceareas,
+    loop(timestep$(maptimestep2month(timestep,month)),
+      * compute common load at this timestep
+      tmp_common = sum(trsp, sum(houses, V_PEVcharging_slow.l(timestep,trsp,priceareas,houses) * kWhtokW))
+                   + sum(houses, HH_dem_t(timestep,houses) / 1000);
+      Monthly_fuse_common(month,priceareas) = max(Monthly_fuse_common(month,priceareas), tmp_common);
+
+      * compute individual peaks at this timestep
+      loop(trsp,
+        loop(houses,
+          tmp_ind = V_PEVcharging_slow.l(timestep,trsp,priceareas,houses) * kWhtokW
+                    + HH_dem_t(timestep,houses) / 1000;
+          Monthly_fuse_ind(month,trsp,priceareas,houses) = max(Monthly_fuse_ind(month,trsp,priceareas,houses), tmp_ind);
+        );      
+      );        
+    );          
+  );            
+);              
+
 
 * Display and export the results
 display Monthly_fuse_common, Monthly_fuse_ind;
 Execute_unload '%Casename%_M.gdx', Monthly_fuse_common, Monthly_fuse_ind;
 executeTool 'csvwrite id=Monthly_fuse_common file=%Casename%_common_peaks.csv';
 executeTool 'csvwrite id=Monthly_fuse_ind file=%Casename%_individual_peaks.csv';
+$offText
 
 Execute_unload '%Casename%.gdx';
 *execute "gdxxrw %Casename%.gdx o=%Casename%.xlsx squeeze=0 var=V_PEV_need rng=Fast_charging!a1";
@@ -378,7 +398,7 @@ executeTool 'csvwrite id=V_PEV_need file=%Casename%_fast_charging.csv';
 executeTool 'csvwrite id=EV_demand file=%Casename%_demand.csv';
 
 *execute "gdxxrw %Casename%.gdx o=%Casename%.csv symb=V_PEVcharging_slow format=csv";
-
+$onText
 * Display total charging (slow + fast) over all vehicles and time periods
 Scalar total_slow_charging, total_fast_charging, total_charging;
 
@@ -387,5 +407,5 @@ total_fast_charging = sum((timestep,trsp,priceareas), V_PEV_need.l(timestep,trsp
 total_charging = total_slow_charging + total_fast_charging;
 
 display total_slow_charging, total_fast_charging, total_charging;
-
+$offText
 
