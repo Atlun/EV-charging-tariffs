@@ -20,3 +20,4 @@
 *.log~1
 /input
 *.zip
+~$toymodel.gms
