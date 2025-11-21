@@ -44,40 +44,12 @@ $elseIf %Temporal_Resolution% ==15_min
 TimestepsPerHour=4;
 DemandFactor=1;
 
-$elseIf %Temporal_Resolution% ==hours
-TimestepsPerHour=1;
-DemandFactor=-1;
-*DemandFactor compensates for input data for demand being positive for the hourly resolution - update if changed input!
 $endIf
-
 
 Sets
 month
 / m1*m12 /
-
-$ifThen %Temporal_Resolution% ==hours
-timestep
-/h0001*h8784/
-
-trsp /
-$include ./trsp_426.inc 
-/;
-
-Table EV_home(timestep,trsp)  notes if car is home or not [1 if home and able to charge - otherwise 0]
-$include "fleetava_home_YDP426.inc"
 ;
-Table EV_demand(timestep,trsp)  electricity demand per car in each daily driving profile [kWh per hour]
-$include "demand_bil_YDP426.inc"
-;
-Table eprice(timestep,priceareas) 
-$include ./eprice_priceareas_%year%.inc
-* €/MWh (unit conversion  for energy demand in in cost eq as energy in normally in kWh)
-;
-Parameter residential_demand(timestep) /
-$include ./h_AVG_residential_demand.inc
-/;
-    
-$else
 
 Sets
 hours
@@ -94,7 +66,6 @@ trsp_all /
 *$include ./logged_carnames.inc
 $include ./names_logged.inc
 /
-    
 ;
 Parameter battery_capacity(trsp_all)/
 $include ./battery_capacity_real.inc
@@ -143,16 +114,16 @@ residential_demand(timestep_all)=residential_demand(timestep_all)*TimestepsPerHo
 Parameter battery_capacity(trsp_all)/
 $include ./Battery_cap_15min_2.inc
 /;
+
 $endIf
+
 Sets
-*trsp(trsp_all) / b100, b102, b103 /
+trsp(trsp_all) / b100, b102, b103 /
 *trsp(trsp_all) / b100, b101, b102, b103, b105, b109, b10A, b10C, b10D, b10E, b10_1, b11, b110, b111, b113, b115, b11B, b12_1, b13, b14_2, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b23, b24, b26, b27, b29, b2A_1, b2C, b2E, b2F, b2_1 / 
 *trsp(trsp_all) / b100, b102, b103, b109, b10A, b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41, b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1 /
 *trsp(trsp_all) / b100, b102, b103, b109, b10A, b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41,  b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1, b50, b52, b55, b58, b59, b5B, b5C, b5_1,b63, b64, b65, b66, b6A, b6B, b6C, b6E, b70, b74, b75, b77, b78, b79, b7B, b7C, b7D, b7E, b7_1  /
 *trsp(trsp_all) / b100, b102, b103, b109, b10D, b10E, b10_1, b110, b113, b115, b117, b11B, b12_1, b13, b14_2, b15, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b26, b29, b2B, b2E, b2F, b2_1, b30, b31, b32, b33, b35, b36, b37, b38, b3B, b3C, b3D, b3E, b3F, b3_1, b41, b43, b44, b47_2, b48, b4A, b4B_1, b4E, b4F, b4_1, b50, b52, b55, b58, b59, b5B, b5C, b5_1, b63, b64, b65, b66, b6A, b6B, b6C, b6E, b70, b74, b75, b77, b78, b79, b7B, b7C, b7D, b7E, b7_1, b80, b87, b88, b8A, b8C, b8D, b8E, b90, b92, b95, b96, b97, b98, b99_1, b9A, b9C, b9D_1, b9E, b9F, b9_1, bA0, bA2, bA3, bA7, bA8, bAC, bAD, bAE, bA_1, bB3, bB4, bB5, bB6, bB7, bB8, bB9, bBB, bBD, bBF, bC0, bC2, bC5, bC8, bC9, bCA_1, bCD, bCF, bC_1, bD1, bD2, bD5, bD6, bD7, bD8, bD9, bDE, bDF, bE5, bE7, bE9, bEB, bF0, bF1, bF4, bF5, bF6, bF7, bF8, bF9, bFA, bFC  /
-trsp(trsp_all) / b100, b101, b102, b103, b105, b109, b10A, b10C, b10D, b10E, b10_1, b11, b110, b111, b113, b115, b11B, b12_1, b13, b14_2, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b23, b24, b26, b27, b29, b2A_1, b2C, b2E, b2F, b2_1, b30, b31, b32, b33, b34, b35, b36, b37, b38, b3B, b3D, b3E, b3F, b3_1, b41, b42, b43, b44, b47_2, b48, b4A, b4B_1, b4C_2, b4E, b4F, b4_1, b50, b51, b52, b55, b56, b57, b58, b59, b5A, b5B, b5C, b5_1, b60, b61, b62, b63, b64, b65, b66, b69, b6B, b6C, b6D, b6E, b6F, b6_1, b70, b73, b74, b75, b76, b77, b78, b7B, b7C, b7D, b7E, b7_1, b80, b82, b84, b85, b87, b88, b89, b8A, b8B, b8C, b8D, b8E, b90, b92, b94, b95, b96, b97, b98, b99_1, b9A, b9D_1, b9E, b9F, b9_1, bA0, bA2, bA3, bA7, bA8, bAA, bAC, bAD, bAE, bAF, bB0, bB2, bB3, bB4, bB6, bB7, bB8, bB9, bBA, bBB, bBF, bB_1, bC2, bC3, bC8, bC9, bCD, bCF, bC_1, bD1, bD2, bD3, bD5, bD6, bD7, bD8, bD9, bDC, bDE, bDF, bE1, bE3, bE5, bE7, bE9, bEB, bEE, bF0, bF1, bF3, bF4, bF5, bF6, bF7, bF9, bFA, bFB, bFC, bFD  /
-
-*alias(trsp_all, trsp);
+*trsp(trsp_all) / b100, b101, b102, b103, b105, b109, b10A, b10C, b10D, b10E, b10_1, b11, b110, b111, b113, b115, b11B, b12_1, b13, b14_2, b17_1, b18_1, b1B, b1C, b1D, b1F, b1_1, b20, b21, b22, b23, b24, b26, b27, b29, b2A_1, b2C, b2E, b2F, b2_1, b30, b31, b32, b33, b34, b35, b36, b37, b38, b3B, b3D, b3E, b3F, b3_1, b41, b42, b43, b44, b47_2, b48, b4A, b4B_1, b4C_2, b4E, b4F, b4_1, b50, b51, b52, b55, b56, b57, b58, b59, b5A, b5B, b5C, b5_1, b60, b61, b62, b63, b64, b65, b66, b69, b6B, b6C, b6D, b6E, b6F, b6_1, b70, b73, b74, b75, b76, b77, b78, b7B, b7C, b7D, b7E, b7_1, b80, b82, b84, b85, b87, b88, b89, b8A, b8B, b8C, b8D, b8E, b90, b92, b94, b95, b96, b97, b98, b99_1, b9A, b9D_1, b9E, b9F, b9_1, bA0, bA2, bA3, bA7, bA8, bAA, bAC, bAD, bAE, bAF, bB0, bB2, bB3, bB4, bB6, bB7, bB8, bB9, bBA, bBB, bBF, bB_1, bC2, bC3, bC8, bC9, bCD, bCF, bC_1, bD1, bD2, bD3, bD5, bD6, bD7, bD8, bD9, bDC, bDE, bDF, bE1, bE3, bE5, bE7, bE9, bEB, bEE, bF0, bF1, bF3, bF4, bF5, bF6, bF7, bF9, bFA, bFB, bFC, bFD  /
 ;
 
 Table epriceh(hours,priceareas) 
@@ -174,7 +145,6 @@ t2h(timestep) = ceil(ord(timestep)/TimestepsPerHour);
 set maptimestep2hour(timestep, hours);
 maptimestep2hour(timestep, hours) = yes$(t2h(timestep) = ord(hours));
 
-$endIf
 
 *map timesteps to months
 alias(month, month2);
@@ -188,9 +158,6 @@ firsttimestepinmonth('m1') = 1;
 
 set maptimestep2month(timestep, month);
 maptimestep2month(timestep, month) = yes $ (ord(timestep) >= firsttimestepinmonth(month) and ord(timestep) <= lasttimestepinmonth(month));
-
-
-
 
 
 $ifThen %Time_Differentiated% == yes
@@ -209,6 +176,7 @@ $endIf
 $else
 Parameter time_diff(timestep);
 time_diff(timestep) = 1;
+
 
 $endIf
 Scalar
@@ -249,9 +217,7 @@ $ifThen %Temporal_Resolution% ==10_min
     
 $elseIf %Temporal_Resolution% ==15_min
     kWhtokW=4;
-$elseIf %Temporal_Resolution% ==hours
-    kWhtokW=1;
-    
+ 
 $endIf
 
 Charge_Power=6.9/kWhtokW;
@@ -279,8 +245,6 @@ EQU_EVstoragelevel(timestep,trsp,priceareas)
 EQU_fuse_need(timestep,trsp,priceareas)
 EQU_month_p_need(timestep,trsp,priceareas)
 EQU_common_power(timestep,priceareas)
-EQU_maxfuse(timestep,priceareas)
-
 ;
 
 V_PEVcharging_slow.up(timestep,trsp,priceareas)=Charge_Power;
@@ -291,15 +255,12 @@ $if %RealBatteryCap%==yes V_PEV_storage.up(timestep,trsp,priceareas)=battery_cap
 $if %RealBatteryCap%==no V_PEV_storage.up(timestep,trsp,priceareas)=Batterysize;
 $if %Time_Differentiated%==no V_maxF_all.fx(month, priceareas)=0;
 
-
-
 EQU_totcost..
 vtotcost =E= 
     sum(priceareas, sum(trsp, 
         sum(timestep, V_PEV_need(timestep,trsp,priceareas)*Price_fastcharge)  
 $if %Temporal_Resolution% == 10_min        + sum(hours, sum(timestep $ maptimestep2hour(timestep, hours), V_PEVcharging_slow(timestep,trsp,priceareas)) * ktoM  * epriceh(hours,priceareas))
 $if %Temporal_Resolution% == 15_min        + sum(hours, sum(timestep $ maptimestep2hour(timestep, hours), V_PEVcharging_slow(timestep,trsp,priceareas)) * ktoM  * epriceh(hours,priceareas))
-$if %Temporal_Resolution% == hours        + sum(timestep, V_PEVcharging_slow(timestep,trsp,priceareas) * ktoM * eprice(timestep,priceareas))
         + V_fuse(trsp,priceareas) *Annual_P_cost  + sum(month, (V_power_monthly(month, trsp,priceareas))*Monthly_P_cost_ind+V_common_power(month, priceareas)*Monthly_P_cost_common )));
         
 EQU_EVstoragelevel(timestep,trsp,priceareas)..
@@ -313,9 +274,6 @@ EQU_month_p_need(timestep, trsp,priceareas)..
 
 EQU_common_power(timestep,priceareas)..
 (sum(trsp, V_PEVcharging_slow(timestep, trsp,priceareas)*kWhtokW)+ residential_demand(timestep)/1000*NumberOfCars)*time_diff(timestep) =L=sum(month $ maptimestep2month(timestep, month), V_common_power(month, priceareas));
-
-EQU_maxfuse(timestep,priceareas)..
-(sum(trsp, V_PEVcharging_slow(timestep, trsp,priceareas)*kWhtokW)+ residential_demand(timestep)/1000*NumberOfCars) =L=sum(month $ maptimestep2month(timestep, month), V_maxF_all(month, priceareas));
 
 
 Model EV_charge /
