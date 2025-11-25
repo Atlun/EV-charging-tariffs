@@ -23,7 +23,7 @@ function makeparameters()
     # residential_demand
     residential_demand_dict = read_gams_parameter("HH_dem_91A2.inc")
     # Convert to Vector aligned with timestep_all
-    residential_demand = [get(residential_demand_dict, t, 0.0) for t in timestep_all]
+    residential_demand = [residential_demand_dict[t] for t in timestep_all]
     # Unit conversion: kWh -> W
     residential_demand .= residential_demand .* TimestepsPerHour .* 1000
     

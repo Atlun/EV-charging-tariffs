@@ -58,7 +58,7 @@ function makeconstraints(model, vars, params)
         set_upper_bound(V_PEVcharging_slow[t, car, area], Charge_Power)
         
         # V_PEVcharging_slow.fx $ (not EV_home) = 0
-        is_home = get(EV_home, (t, car), 0.0)
+        is_home = EV_home[t, car]
         if is_home == 0
             fix(V_PEVcharging_slow[t, car, area], 0.0; force=true)
         end
@@ -71,7 +71,7 @@ function makeconstraints(model, vars, params)
         # V_PEV_storage.up
         # RealBatteryCap = yes
         # GAMS default for parameter is 0. If car is not in file, capacity is 0.
-        cap = get(battery_capacity_dict, car, 0.0)
+        cap = battery_capacity_dict[car]
         set_upper_bound(V_PEV_storage[t, car, area], cap)
     end
     
@@ -121,19 +121,19 @@ function makeconstraints(model, vars, params)
     # EQU_fuse_need
     # Optimize by iterating indices
     @constraint(model, EQU_fuse_need[i in 1:length(timestep_all), c in trsp, a in priceareas],
-        (V_PEVcharging_slow[timestep_all[i], c, a] * kWhtokW + residential_demand[i]/1000) * get(time_diff, timestep_all[i], 1.0) <= V_fuse[c, a]
+        (V_PEVcharging_slow[timestep_all[i], c, a] * kWhtokW + residential_demand[i]/1000) * time_diff[timestep_all[i]] <= V_fuse[c, a]
     )
     
     # EQU_month_p_need
     @constraint(model, EQU_month_p_need[i in 1:length(timestep_all), c in trsp, a in priceareas],
-        (V_PEVcharging_slow[timestep_all[i], c, a] * kWhtokW + residential_demand[i]/1000) * get(time_diff, timestep_all[i], 1.0) <= 
-        sum(V_power_monthly[m, c, a] for m in month if get(t2m, timestep_all[i], "") == m)
+        (V_PEVcharging_slow[timestep_all[i], c, a] * kWhtokW + residential_demand[i]/1000) * time_diff[timestep_all[i]] <= 
+        V_power_monthly[t2m[timestep_all[i]], c, a]
     )
     
     # EQU_common_power
     @constraint(model, EQU_common_power[i in 1:length(timestep_all), a in priceareas],
-        (sum(V_PEVcharging_slow[timestep_all[i], c, a] for c in trsp) * kWhtokW + residential_demand[i]/1000 * NumberOfCars) * get(time_diff, timestep_all[i], 1.0) <=
-        sum(V_common_power[m, a] for m in month if get(t2m, timestep_all[i], "") == m)
+        (sum(V_PEVcharging_slow[timestep_all[i], c, a] for c in trsp) * kWhtokW + residential_demand[i]/1000 * NumberOfCars) * time_diff[timestep_all[i]] <=
+        V_common_power[t2m[timestep_all[i]], a]
     )
     
     return (; EQU_totcost, EQU_EVstoragelevel, EQU_fuse_need, EQU_month_p_need, EQU_common_power)
@@ -177,10 +177,8 @@ function write_results(params, vars)
     # Pre-compute timesteps per month for efficiency
     ts_in_month = Dict(m => Int[] for m in month)
     for (i, t) in enumerate(timestep_all)
-        m = get(t2m, t, "")
-        if !isempty(m)
-            push!(ts_in_month[m], i)
-        end
+        m = t2m[t]
+        push!(ts_in_month[m], i)
     end
     
     for m in month, a in priceareas
