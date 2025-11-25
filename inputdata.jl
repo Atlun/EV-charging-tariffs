@@ -68,19 +68,17 @@ function makeparameters()
     # eprice
     println("Reading eprice...")
     eprice_df = read_gams_table("eprice_priceareas_2023.INC")
-    eprice = df_to_dict(eprice_df)
+    eprice_hourly = df_to_dict(eprice_df)
     
-    # Time mappings
-    # maptimestep2hour: t -> h
-    # t2h(timestep) = ceil(ord(timestep)/TimestepsPerHour)
-    t2h = Dict{String, String}()
+    eprice = Dict{Tuple{String, String}, Float64}()
     for (i, t) in enumerate(timestep_all)
         h_idx = ceil(Int, i / TimestepsPerHour)
-        if h_idx <= length(hours)
-            t2h[t] = hours[h_idx]
+        hour = hours[h_idx]
+        for a in priceareas
+            eprice[t, a] = eprice_hourly[hour, a]
         end
     end
-    
+
     # maptimestep2month
     # dayspermonth
     dayspermonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -113,5 +111,5 @@ function makeparameters()
     return (; TimestepsPerHour, NumberOfCars, DemandFactor,
               priceareas, month, hours, timestep_all, trsp_all, trsp,
               battery_capacity_dict, residential_demand, eprice,
-              EV_home, EV_demand, t2h, t2m, time_diff)
+              EV_home, EV_demand, t2m, time_diff)
 end

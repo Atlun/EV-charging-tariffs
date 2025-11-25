@@ -32,7 +32,7 @@ end
 function makeconstraints(model, vars, params)
     (; timestep_all, trsp, priceareas, month, hours,
        battery_capacity_dict, residential_demand, eprice,
-       EV_home, EV_demand, t2h, t2m, time_diff,
+       EV_home, EV_demand, t2m, time_diff,
        TimestepsPerHour, NumberOfCars, DemandFactor) = params
        
     (; V_PEVcharging_slow, V_PEV_storage, V_PEV_need, V_fuse, 
@@ -79,8 +79,7 @@ function makeconstraints(model, vars, params)
     @constraint(model, EQU_totcost,
         vtotcost == 
         sum(V_PEV_need[t, c, a] * Price_fastcharge for t in timestep_all, c in trsp, a in priceareas) +
-        sum(V_PEVcharging_slow[t, c, a] * ktoM * get(eprice, (get(t2h, t, "h0001"), a), 0.0) 
-            for t in timestep_all, c in trsp, a in priceareas) +
+        sum(V_PEVcharging_slow[t, c, a] * ktoM * eprice[t, a] for t in timestep_all, c in trsp, a in priceareas) +
         sum(V_fuse[c, a] * Annual_P_cost for c in trsp, a in priceareas) +
         sum(V_power_monthly[m, c, a] * Monthly_P_cost_ind for m in month, c in trsp, a in priceareas) +
         sum(V_common_power[m, a] * Monthly_P_cost_common for m in month, a in priceareas)
