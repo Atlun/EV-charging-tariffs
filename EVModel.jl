@@ -105,15 +105,12 @@ function makeconstraints(model, vars, params)
     # "timestep++1" is the next element.
     # I will iterate t from 1 to T-1.
     
-    # Also need to handle indices for vectors.
-    ts_ids = timestep_all
-    
-    @constraint(model, EQU_EVstoragelevel[i in 1:length(ts_ids)-1, c in trsp, a in priceareas],
-        V_PEV_storage[ts_ids[i+1], c, a] == 
-        V_PEV_storage[ts_ids[i], c, a] + 
-        V_PEVcharging_slow[ts_ids[i], c, a] * Beff_EV * get(EV_home, (ts_ids[i], c), 0.0) +
-        get(EV_demand, (ts_ids[i], c), 0.0) * DemandFactor +
-        V_PEV_need[ts_ids[i], c, a] * Beff_EV * (1 - get(EV_home, (ts_ids[i], c), 0.0))
+    # Also need to handle indices for vectors.    
+    @constraint(model, EQU_EVstoragelevel[(i,t) in enumerate(timestep_all), c in trsp, a in priceareas],
+        V_PEV_storage[t == timestep_all[end] ? timestep_all[1] : timestep_all[i+1], c, a] ==
+        V_PEV_storage[t, c, a] + 
+        V_PEVcharging_slow[t, c, a] * Beff_EV * EV_home[t, c] + EV_demand[t, c] * DemandFactor +
+        V_PEV_need[t, c, a] * Beff_EV * (1 - EV_home[t, c])
     )
     
     # Initial storage condition? GAMS doesn't specify. Usually free or fixed to something.
