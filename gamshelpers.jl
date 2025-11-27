@@ -1,5 +1,36 @@
 # Helper functions for reading GAMS data files
 
+read_gams(filepath; args...) = CSV.read(filepath, DataFrame; comment="*", delim=' ', ignorerepeated=true, args...)
+
+function read_gams_incfile(filepath; header=false, args...)
+    df = CSV.read(filepath, DataFrame; header, comment="*", delim=' ', ignorerepeated=true, silencewarnings=true, args...)
+    if header
+        # Fix the headers which are offset by 1 - Gams INC tables have no header for the first column  
+        rename!(df, ["row_id"; names(df)[1:end-1]])
+    end
+    return df
+end
+
+read_gams_inc(filepath; args...) = read_gams(filepath; header=0, args...)
+
+function read_gams_inc_table(filepath; args...)
+    header = read_gams(filepath; limit=0) |> names
+    lines = count_comment_lines(filepath)
+    read_gams(filepath; header=["rownames"; header], skipto=lines+1, args...)
+end
+
+function count_comment_lines(filepath)
+    open(filepath, "r") do file
+        for (i, line) in enumerate(eachline(file))
+            if isempty(line) || startswith(line, "*")
+                continue
+            end
+            return i
+        end
+        return 0
+    end
+end
+
 function read_gams_set(filepath)
     # Reads a GAMS set file (list of symbols)
     # Assumes symbols are the first token on each line
