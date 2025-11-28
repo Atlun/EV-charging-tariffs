@@ -9,10 +9,6 @@ include("$(@__DIR__)/inputdata.jl")
 
 function makevariables(model, params)
     (; timestep_all, trsp, priceareas, month) = params
-       
-    # Scalars needed for bounds (some are passed in params or defined here)
-    # We need to pass Charge_Power and Batterysize from makeparameters or define them here.
-    # I'll add them to makeparameters return values first.
     
     @variables model begin
         V_PEVcharging_slow[timestep_all, trsp, priceareas] >= 0
@@ -30,27 +26,14 @@ function makevariables(model, params)
 end
 
 function makeconstraints(model, vars, params)
-    (; timestep_all, trsp, priceareas, month, hours,
+    (; timestep_all, trsp, priceareas, month,
        battery_capacity_dict, residential_demand, eprice,
        EV_home, EV_demand, t2m, time_diff,
-       TimestepsPerHour, NumberOfCars, DemandFactor) = params
+       NumberOfCars, DemandFactor, Beff_EV, Price_fastcharge, kWhtokW, Charge_Power, ktoM,
+       Monthly_P_cost_ind, Monthly_P_cost_common, Annual_P_cost) = params 
        
     (; V_PEVcharging_slow, V_PEV_storage, V_PEV_need, V_fuse, 
-       V_power_monthly, V_common_power, V_maxF_all, vtotcost) = vars
-       
-    # Constants
-    Beff_EV = 0.95
-    Batterysize = 70.0
-    Price_fastcharge = 0.56
-    kWhtokW = 4.0
-    Charge_Power = 6.9 / kWhtokW
-    Fuse_cost = 7.4
-    ktoM = 1/1000
-    
-    # Cost flags (hardcoded based on GAMS defaults)
-    Monthly_P_cost_ind = 0.0
-    Monthly_P_cost_common = 0.0
-    Annual_P_cost = 0.0
+       V_power_monthly, V_common_power, vtotcost) = vars
     
     # Bounds and Fixed values
     for t in timestep_all, car in trsp, area in priceareas
@@ -139,12 +122,12 @@ function makeconstraints(model, vars, params)
     return (; EQU_totcost, EQU_EVstoragelevel, EQU_fuse_need, EQU_month_p_need, EQU_common_power)
 end
 
-function makemodel()
+function makemodel(hh_profile, flags)
     # Use Gurobi to match GAMS. Switch to HiGHS.Optimizer if Gurobi is not available.
     model = Model(Gurobi.Optimizer)
     # set_optimizer_attribute(model, "OutputFlag", 0)
     
-    params = makeparameters()
+    params = makeparameters(hh_profile, flags)
     vars = makevariables(model, params)
     constraints = makeconstraints(model, vars, params)
     
@@ -153,8 +136,12 @@ function makemodel()
     return model, params, vars, constraints
 end
 
-function runmodel()
-    model, params, vars, constraints = makemodel()
+function runmodel(hh_profile=:BASE; tariffs=false, Monthly_Power_Cost=false, Common_Power_Cost=false, Annual_Power_Cost=false)
+    if tariffs
+        Annual_Power_Cost = Monthly_Power_Cost = true
+    end
+    flags = (; Annual_Power_Cost, Monthly_Power_Cost, Common_Power_Cost)
+    model, params, vars, constraints = makemodel(hh_profile, flags)
     optimize!(model)
     println("Objective value: ", objective_value(model))
     

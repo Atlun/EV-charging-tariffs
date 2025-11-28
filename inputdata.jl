@@ -1,4 +1,6 @@
-function makeparameters()
+function makeparameters(hh_profile, flags)
+    (; Monthly_Power_Cost, Common_Power_Cost, Annual_Power_Cost) = flags
+
     println("Loading parameters...")
     
     # Scalars
@@ -11,7 +13,24 @@ function makeparameters()
     month = ["m$i" for i in 1:12]
     hours = ["h$(lpad(i, 4, "0"))" for i in 1:8760]
     timestep_all = ["t$(lpad(i, 5, "0"))" for i in 1:35040]
+    houses = [:BASE, :DV1, :DV2, :DV3, :EJ1, :EJ2, :EJ3, :VP1, :VP2, :VP3,
+        :DVV1, :DVV2, :DVV3, :APTEL1, :APTEL2, :APTEL3, :APTEJ1, :APTEJ2, :APTEJ3]
+    @assert hh_profile in houses
     
+    # Constants
+    Beff_EV = 0.95
+    Batterysize = 70.0
+    Price_fastcharge = 0.56
+    kWhtokW = 4.0
+    Charge_Power = 6.9 / kWhtokW
+    Fuse_cost = 7.4
+    ktoM = 1/1000
+
+    # Cost coefficients (based on input flags)
+    Monthly_P_cost_ind = Monthly_Power_Cost ? Fuse_cost : 0.0
+    Monthly_P_cost_common = Common_Power_Cost ? Fuse_cost : 0.0
+    Annual_P_cost = Annual_Power_Cost ? Fuse_cost * 12 : 0.0
+
     # Read trsp set
     trsp_all = read_gams_set("logged_names_2.INC")
     # Active subset in GAMS
@@ -21,9 +40,15 @@ function makeparameters()
     battery_capacity_dict = read_gams_parameter("Battery_cap_15min_2.INC")
     
     # residential_demand
-    residential_demand_dict = read_gams_parameter("HH_dem_91A2.inc")
-    # Convert to Vector aligned with timestep_all
-    residential_demand = [residential_demand_dict[t] for t in timestep_all]
+    println("Reading HH demand ($hh_profile)...")
+    if hh_profile == :BASE
+        residential_demand_dict = read_gams_parameter("HH_dem_91A2.inc")
+        # Convert to Vector aligned with timestep_all
+        residential_demand = [residential_demand_dict[t] for t in timestep_all]
+    else
+        HH_dem_df = read_gams_table("HH_dem_random_15min.inc")
+        residential_demand = HH_dem_df[!, hh_profile]
+    end
     # Unit conversion: kWh -> W
     residential_demand .= residential_demand .* TimestepsPerHour .* 1000
     
@@ -108,8 +133,9 @@ function makeparameters()
     time_diff = Dict(t => 1.0 for t in timestep_all)
     
     # Return everything
-    return (; TimestepsPerHour, NumberOfCars, DemandFactor,
-              priceareas, month, hours, timestep_all, trsp_all, trsp,
-              battery_capacity_dict, residential_demand, eprice,
-              EV_home, EV_demand, t2m, time_diff)
+    return (; priceareas, month, hours, timestep_all, trsp_all, trsp,
+            TimestepsPerHour, NumberOfCars, DemandFactor, Beff_EV, Batterysize,
+            Price_fastcharge, kWhtokW, Charge_Power, Fuse_cost, ktoM,
+            battery_capacity_dict, residential_demand, eprice, EV_home, EV_demand,
+            t2m, time_diff, Monthly_P_cost_ind, Monthly_P_cost_common, Annual_P_cost)
 end
