@@ -1,0 +1,233 @@
+C:\Stuff\Energiteknik\EV-toymodel-tariffs>gams toymodel_multi.gms
+--- Job toymodel_multi.gms Start 11/28/25 13:24:15 49.4.0 6fb2fe8b WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\Program Files\GAMS 49\gmsprmNT.txt
+    C:\Users\niclas\Documents\GAMS\gamsconfig.yaml
+--- GAMS Parameters defined
+    Input C:\Stuff\Energiteknik\EV-toymodel-tariffs\toymodel_multi.gms
+    ScrDir C:\Stuff\Energiteknik\EV-toymodel-tariffs\225a\
+    SysDir "C:\Program Files\GAMS 49\"
+Licensee: MUD- 5 User License                            S250128|0002AO-GEN
+          Chalmers University of Technology, Energy and EnvironmenDC1138-S8
+          C:\Users\niclas\Documents\GAMS\gamslice.txt
+          License Admin: Niclas Mattsson, niclas.mattsson@chalmers.se
+          The maintenance period of the license will expire on Jan 23, 2026
+System information: 8 physical cores and 40 Gb memory detected
+GAMS 49.4.0   Copyright (C) 1987-2025 GAMS Development. All rights reserved
+--- Starting compilation
+--- toymodel_multi.gms(97) 7 Mb
+--- . logged_names_2.inc(220) 7 Mb
+--- toymodel_multi.gms(101) 7 Mb
+--- . homeshare_2.inc(35052) 167 Mb
+--- toymodel_multi.gms(104) 167 Mb
+--- . tripenergy_2.inc(35052) 178 Mb
+--- toymodel_multi.gms(110) 178 Mb
+--- . HH_dem_91A2.inc(35051) 178 Mb
+--- toymodel_multi.gms(116) 178 Mb
+--- . Battery_cap_15min_2.inc(219) 178 Mb
+--- toymodel_multi.gms(123) 178 Mb
+--- . HH_dem_random_15min.inc(35052) 200 Mb
+--- toymodel_multi.gms(141) 200 Mb
+--- . eprice_priceareas_2023.inc(8796) 201 Mb
+--- toymodel_multi.gms(174) 201 Mb
+--- Found nested $ifThen within $If statement.
+--- Use unique tag to ensure correct behavior.
+--- toymodel_multi.gms(369) 201 Mb
+--- Starting execution: elapsed 0:00:02.314
+--- toymodel_multi.gms(149567) 205 Mb  11 secs
+--- toymodel_multi.gms(149699) 1518 Mb
+--- Generating LP model EV_charge
+--- toymodel_multi.gms(149663) 1518 Mb
+--- Starting Equ EQU_totcost: elapsed 0:00:15.735
+--- toymodel_multi.gms(149663) 2609 Mb  13 secs
+--- toymodel_multi.gms(149671) 2638 Mb
+--- Starting Equ EQU_EVstoragelevel: elapsed 0:00:29.606
+--- toymodel_multi.gms(149671) 6992 Mb  7 secs
+--- toymodel_multi.gms(149674) 6994 Mb
+--- Starting Equ EQU_fuse_need: elapsed 0:00:36.723
+--- toymodel_multi.gms(149674) 7772 Mb  6 secs
+--- toymodel_multi.gms(149677) 7773 Mb
+--- Starting Equ EQU_month_p_need: elapsed 0:00:42.775
+--- toymodel_multi.gms(149677) 8569 Mb  6 secs
+--- toymodel_multi.gms(149680) 8570 Mb
+--- Starting Equ EQU_common_power: elapsed 0:00:49.251
+--- toymodel_multi.gms(149680) 8646 Mb  5 secs
+--- toymodel_multi.gms(149702) 8848 Mb  19 secs
+---   25,228,801 rows  15,140,953 columns  62,262,523 non-zeroes
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 1.081E-04, 2.573E+03] - Zero values observed as well
+--- Bound     [min, max] : [ 1.725E+00, 6.870E+01] - Zero values observed as well
+--- Matrix    [min, max] : [ 1.000E-05, 4.000E+00]
+--- Executing GUROBI (Solvelink=2): elapsed 0:01:14.743
+
+Gurobi           49.4.0 6fb2fe8b Apr 6, 2025           WEI x86 64bit/MS Window
+
+Gurobi library version 12.0.1
+GAMS/Gurobi Link license.
+Set parameter OutputFlag to value 1
+Reading parameter(s) from "C:\Stuff\Energiteknik\EV-toymodel-tariffs\gurobi.opt"
+>>  Threads=16
+>>  Method=2
+>>  FeasibilityTol=1e-9
+>>  OptimalityTol=1e-9
+>>  Presolve=1
+>>  PreSparsify=1
+>>  Cuts=2
+>>  NonConvex=2
+>>  Crossover=0
+>>  MIPGap=1e-9
+>>  DisplayInterval=1
+>>  NodeMethod=2
+>>  *iis=1
+Finished reading from "C:\Stuff\Energiteknik\EV-toymodel-tariffs\gurobi.opt"
+Set parameter Presolve to value 1
+Set parameter IterationLimit to value 400000
+Set parameter TimeLimit to value 1000000
+Set parameter FeasibilityTol to value 1e-09
+Set parameter MIPGap to value 1e-09
+Set parameter MIPGapAbs to value 0
+Set parameter OptimalityTol to value 1e-09
+Set parameter DisplayInterval to value 1
+Set parameter PreSparsify to value 1
+Set parameter Method to value 2
+Set parameter Crossover to value 0
+Set parameter NodeMethod to value 2
+Set parameter NonConvex to value 2
+Set parameter Cuts to value 2
+Set parameter Threads to value 16
+Space for names approximately 1768.16 Mb
+Use option 'names no' to turn use of names off
+Set parameter OutputFlag to value 1
+Starting Gurobi...
+Gurobi Optimizer version 12.0.1 build v12.0.1rc0 (win64 - Windows 11+.0 (26200.2))
+
+CPU model: AMD Ryzen 9 6900HX with Radeon Graphics, instruction set [SSE2|AVX|AVX2]
+Thread count: 8 physical cores, 16 logical processors, using up to 16 threads
+
+Non-default parameters:
+IterationLimit  400000
+TimeLimit  1000000
+FeasibilityTol  1e-09
+MIPGap  1e-09
+MIPGapAbs  0
+OptimalityTol  1e-09
+Method  2
+Crossover  0
+NodeMethod  2
+Cuts  2
+DisplayInterval  1
+NonConvex  2
+Presolve  1
+PreSparsify  1
+Threads  16
+
+Optimize a model with 25228800 rows, 15140952 columns and 54717120 nonzeros
+Model fingerprint: 0x3cd0ebb4
+Coefficient statistics:
+  Matrix range     [7e-05, 4e+00]
+  Objective range  [1e-05, 6e-01]
+  Bounds range     [2e+00, 7e+01]
+  RHS range        [1e-04, 3e+03]
+Presolve removed 0 rows and 0 columns (presolve time = 2s)...
+Presolve removed 17660160 rows and 3672 columns (presolve time = 4s)...
+Presolve removed 17660160 rows and 3672 columns (presolve time = 6s)...
+Presolve removed 17660160 rows and 3672 columns (presolve time = 6s)...
+Presolve removed 17660160 rows and 3672 columns (presolve time = 7s)...
+Presolve removed 17660160 rows and 3672 columns (presolve time = 9s)...
+Presolve removed 18596488 rows and 940000 columns (presolve time = 10s)...
+Presolve removed 23396488 rows and 5740000 columns (presolve time = 11s)...
+Presolve removed 24762168 rows and 7105680 columns (presolve time = 13s)...
+Presolve removed 24762168 rows and 7105680 columns (presolve time = 14s)...
+Presolve removed 24762168 rows and 7105680 columns
+Presolve time: 14.81s
+Presolved: 466632 rows, 8035272 columns, 8501904 nonzeros
+Ordering time: 0.16s
+
+Barrier statistics:
+ AA' NZ     : 4.666e+05
+ Factor NZ  : 7.908e+06 (roughly 3.5 GB of memory)
+ Factor Ops : 1.667e+08 (less than 1 second per iteration)
+ Threads    : 16
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0   3.94696502e+07 -8.47350891e+09  5.56e+03 9.04e+01  6.07e+03    18s
+   1   5.62296447e+06 -3.46632989e+09  6.16e+02 8.91e+01  8.07e+02    20s
+   2   1.44643884e+06 -1.48896112e+09  1.28e+02 1.30e+01  2.07e+02    21s
+   3   5.71497604e+05 -5.87278528e+08  3.89e+01 2.73e+00  6.51e+01    22s
+   4   2.79608268e+05 -1.19153884e+08  6.98e+00 1.14e-02  1.12e+01    23s
+   5   2.33731148e+05 -3.75287350e+07  1.74e+00 1.59e-12  3.15e+00    24s
+   6   2.15203170e+05 -2.44864604e+06  6.40e-11 9.09e-13  2.01e-01    25s
+   7   1.83015487e+05 -1.40664169e+06  2.44e-10 5.18e-13  1.20e-01    26s
+   8   1.56964247e+05 -4.97429756e+05  2.46e-10 4.55e-13  4.93e-02    28s
+   9   1.33902377e+05 -3.01681383e+05  1.60e-10 2.27e-13  3.28e-02    29s
+  10   1.14120514e+05 -1.61736908e+05  1.58e-10 2.56e-13  2.08e-02    30s
+  11   1.11070781e+05 -1.38366588e+05  1.57e-10 2.27e-13  1.88e-02    31s
+  12   1.01991782e+05 -9.89618941e+04  1.56e-10 1.42e-13  1.51e-02    32s
+  13   8.72048919e+04 -5.32902944e+04  1.04e-10 1.56e-13  1.06e-02    34s
+  14   7.37125705e+04 -1.39979780e+04  2.07e-10 1.56e-13  6.60e-03    36s
+  15   6.09100058e+04  8.48215342e+03  2.12e-10 2.06e-13  3.95e-03    38s
+  16   5.27824314e+04  1.54235109e+04  2.82e-10 1.85e-13  2.81e-03    40s
+  17   4.90703493e+04  2.02094188e+04  2.38e-10 2.88e-13  2.17e-03    41s
+  18   4.70996573e+04  2.44675817e+04  2.04e-10 1.42e-13  1.70e-03    42s
+  19   4.52925522e+04  2.56874088e+04  1.65e-10 2.49e-13  1.48e-03    43s
+  20   4.34800259e+04  2.63672923e+04  1.44e-10 4.16e-13  1.29e-03    44s
+  21   4.27535764e+04  2.71172211e+04  1.37e-10 3.46e-13  1.18e-03    45s
+  22   4.24829629e+04  2.86886623e+04  1.30e-10 1.17e-13  1.04e-03    46s
+  23   4.16355775e+04  2.98846760e+04  1.21e-10 7.53e-14  8.85e-04    47s
+  24   4.01132359e+04  3.03521532e+04  9.19e-11 1.24e-13  7.35e-04    49s
+  25   3.84402836e+04  3.10553302e+04  4.39e-11 1.41e-13  5.56e-04    50s
+  26   3.73476747e+04  3.15510706e+04  1.96e-11 1.19e-13  4.36e-04    52s
+  27   3.65146212e+04  3.18295906e+04  2.55e-11 1.88e-13  3.53e-04    53s
+  28   3.58513026e+04  3.20885385e+04  2.09e-11 1.69e-13  2.83e-04    55s
+  29   3.52350655e+04  3.23062735e+04  2.35e-11 1.63e-13  2.20e-04    56s
+  30   3.46430278e+04  3.24960853e+04  2.95e-11 9.77e-14  1.62e-04    58s
+  31   3.41139429e+04  3.26225302e+04  9.12e-11 1.11e-13  1.12e-04    60s
+  32   3.37539806e+04  3.27255682e+04  5.50e-11 9.54e-14  7.74e-05    61s
+  33   3.34012837e+04  3.27712389e+04  6.27e-11 9.31e-14  4.74e-05    63s
+  34   3.32173731e+04  3.28253301e+04  3.92e-11 1.15e-13  2.95e-05    64s
+  35   3.31406847e+04  3.28411735e+04  1.00e-10 1.21e-13  2.25e-05    65s
+  36   3.31049951e+04  3.28464488e+04  6.44e-10 1.39e-13  1.95e-05    66s
+  37   3.30596763e+04  3.28553486e+04  5.26e-10 2.80e-13  1.54e-05    67s
+  38   3.30169111e+04  3.28648174e+04  3.96e-10 2.32e-13  1.14e-05    68s
+  39   3.29831797e+04  3.28679973e+04  2.46e-09 1.34e-13  8.67e-06    69s
+  40   3.29511868e+04  3.28724290e+04  1.21e-09 1.58e-13  5.93e-06    70s
+  41   3.29360025e+04  3.28764319e+04  9.41e-10 2.03e-13  4.48e-06    71s
+  42   3.29158360e+04  3.28780335e+04  5.74e-10 1.46e-13  2.85e-06    72s
+  43   3.28998063e+04  3.28798340e+04  2.97e-10 1.01e-13  1.50e-06    72s
+  44   3.28920118e+04  3.28804542e+04  1.66e-10 3.77e-13  8.70e-07    73s
+  45   3.28862722e+04  3.28811753e+04  7.23e-11 6.36e-14  3.84e-07    74s
+  46   3.28844998e+04  3.28812819e+04  1.49e-10 1.17e-13  2.42e-07    75s
+  47   3.28822099e+04  3.28814729e+04  2.90e-10 2.77e-13  5.55e-08    76s
+  48   3.28816188e+04  3.28815306e+04  1.80e-10 1.30e-13  6.64e-09    77s
+  49   3.28815526e+04  3.28815523e+04  3.21e-11 3.50e-13  1.98e-11    78s
+
+Barrier solved model in 49 iterations and 78.36 seconds (89.22 work units)
+Optimal objective 3.28815526e+04
+
+
+User-callback calls 3144, time in user-callback 0.00 sec
+LP status(2): Model was solved to optimality (subject to tolerances).
+No basis information available.
+--- Reading solution for model EV_charge
+--- toymodel_multi.gms(149702) 8848 Mb  146 secs
+--- Executing after solve: elapsed 0:03:24.370
+--- toymodel_multi.gms(149746) 8848 Mb  7 secs
+--- GDX File (execute_unload) C:\Stuff\Energiteknik\EV-toymodel-tariffs\Test_Realcap_yes_15_min_2023.gdx
+--- toymodel_multi.gms(149748) 8848 Mb
+--- toymodel_multi.gms(149749) 8848 Mb
+--- toymodel_multi.gms(149750) 8848 Mb
+--- Profile Summary (56 records processed)
+   116.716   8.848GB    149702 Solver     EV_charge
+    20.297   8.848GB    149702 Solve Fini EV_charge (62262523)
+    19.703   8.848GB    149748 Execute
+    13.860   2.636GB    149663 Equation   EQU_totcost (1)
+    12.906   8.848GB    149702 Solve Read EV_charge
+    11.922   0.205GB    149567 Assignment maptimestep2hour (35040)
+     9.781   8.848GB    149749 Execute
+     8.172   8.848GB    149746 Unload
+     7.125   6.993GB    149671 Equation   EQU_EVstoragelevel (7568640)
+     6.485   8.569GB    149677 Equation   EQU_month_p_need (7568640)
+*** Status: Normal completion
+--- toymodel_multi.gms(149750) 8847 Mb
+--- Job toymodel_multi.gms Stop 11/28/25 13:28:17 elapsed 0:04:02.496
