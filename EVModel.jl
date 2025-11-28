@@ -143,12 +143,13 @@ function runmodel(hh_profile=:BASE; tariffs=false, Monthly_Power_Cost=false, Com
     flags = (; Annual_Power_Cost, Monthly_Power_Cost, Common_Power_Cost)
     model, params, vars, constraints = makemodel(hh_profile, flags)
     optimize!(model)
-    println("Objective value: ", objective_value(model))
+    objective = objective_value(model)
+    println("Objective value: ", objective)
     
     write_results(params, vars)
     
     println("Done.")
-    return nothing
+    return objective
 end
 
 function write_results(params, vars)
