@@ -1,5 +1,5 @@
 function makeparameters(hh_profile, flags)
-    (; Monthly_Power_Cost, Common_Power_Cost, Annual_Power_Cost) = flags
+    (; Monthly_Power_Cost, Common_Power_Cost, Annual_Power_Cost, timediff, testrun) = flags
 
     println("Loading parameters...")
     
@@ -34,18 +34,21 @@ function makeparameters(hh_profile, flags)
     # Read trsp set
     trsp_all = read_gams_set("logged_names_2.INC")
     # Active subset in GAMS
-    # trsp = ["b100", "b102", "b103"]
-    trsp = string.([:b100, :b101, :b102, :b103, :b105, :b109, :b10A, :b10C, :b10D, :b10E, :b10_1, :b11, :b110, :b111,
-        :b113, :b115, :b11B, :b12_1, :b13, :b14_2, :b17_1, :b18_1, :b1B, :b1C, :b1D, :b1F, :b1_1, :b20, :b21, :b22,
-        :b23, :b24, :b26, :b27, :b29, :b2A_1, :b2C, :b2E, :b2F, :b2_1, :b30, :b31, :b32, :b33, :b34, :b35, :b36, :b37,
-        :b38, :b3B, :b3D, :b3E, :b3F, :b3_1, :b41, :b42, :b43, :b44, :b47_2, :b48, :b4A, :b4B_1, :b4C_2, :b4E, :b4F,
-        :b4_1, :b50, :b51, :b52, :b55, :b56, :b57, :b58, :b59, :b5A, :b5B, :b5C, :b5_1, :b60, :b61, :b62, :b63, :b64,
-        :b65, :b66, :b69, :b6B, :b6C, :b6D, :b6E, :b6F, :b6_1, :b70, :b73, :b74, :b75, :b76, :b77, :b78, :b7B, :b7C,
-        :b7D, :b7E, :b7_1, :b80, :b82, :b84, :b85, :b87, :b88, :b89, :b8A, :b8B, :b8C, :b8D, :b8E, :b90, :b92, :b94,
-        :b95, :b96, :b97, :b98, :b99_1, :b9A, :b9D_1, :b9E, :b9F, :b9_1, :bA0, :bA2, :bA3, :bA7, :bA8, :bAA, :bAC,
-        :bAD, :bAE, :bAF, :bB0, :bB2, :bB3, :bB4, :bB6, :bB7, :bB8, :bB9, :bBA, :bBB, :bBF, :bB_1, :bC2, :bC3, :bC8,
-        :bC9, :bCD, :bCF, :bC_1, :bD1, :bD2, :bD3, :bD5, :bD6, :bD7, :bD8, :bD9, :bDC, :bDE, :bDF, :bE1, :bE3, :bE5,
-        :bE7, :bE9, :bEB, :bEE, :bF0, :bF1, :bF3, :bF4, :bF5, :bF6, :bF7, :bF9, :bFA, :bFB, :bFC, :bFD])
+    if testrun
+        trsp = ["b100", "b102", "b103"]
+    else
+        trsp = string.([:b100, :b101, :b102, :b103, :b105, :b109, :b10A, :b10C, :b10D, :b10E, :b10_1, :b11, :b110, :b111,
+            :b113, :b115, :b11B, :b12_1, :b13, :b14_2, :b17_1, :b18_1, :b1B, :b1C, :b1D, :b1F, :b1_1, :b20, :b21, :b22,
+            :b23, :b24, :b26, :b27, :b29, :b2A_1, :b2C, :b2E, :b2F, :b2_1, :b30, :b31, :b32, :b33, :b34, :b35, :b36, :b37,
+            :b38, :b3B, :b3D, :b3E, :b3F, :b3_1, :b41, :b42, :b43, :b44, :b47_2, :b48, :b4A, :b4B_1, :b4C_2, :b4E, :b4F,
+            :b4_1, :b50, :b51, :b52, :b55, :b56, :b57, :b58, :b59, :b5A, :b5B, :b5C, :b5_1, :b60, :b61, :b62, :b63, :b64,
+            :b65, :b66, :b69, :b6B, :b6C, :b6D, :b6E, :b6F, :b6_1, :b70, :b73, :b74, :b75, :b76, :b77, :b78, :b7B, :b7C,
+            :b7D, :b7E, :b7_1, :b80, :b82, :b84, :b85, :b87, :b88, :b89, :b8A, :b8B, :b8C, :b8D, :b8E, :b90, :b92, :b94,
+            :b95, :b96, :b97, :b98, :b99_1, :b9A, :b9D_1, :b9E, :b9F, :b9_1, :bA0, :bA2, :bA3, :bA7, :bA8, :bAA, :bAC,
+            :bAD, :bAE, :bAF, :bB0, :bB2, :bB3, :bB4, :bB6, :bB7, :bB8, :bB9, :bBA, :bBB, :bBF, :bB_1, :bC2, :bC3, :bC8,
+            :bC9, :bCD, :bCF, :bC_1, :bD1, :bD2, :bD3, :bD5, :bD6, :bD7, :bD8, :bD9, :bDC, :bDE, :bDF, :bE1, :bE3, :bE5,
+            :bE7, :bE9, :bEB, :bEE, :bF0, :bF1, :bF3, :bF4, :bF5, :bF6, :bF7, :bF9, :bFA, :bFB, :bFC, :bFD])
+    end
 
     # Parameters
     battery_capacity_dict = read_gams_parameter("Battery_cap_15min_2.INC")
@@ -141,7 +144,7 @@ function makeparameters(hh_profile, flags)
     end
     
     # time_diff
-    time_diff = Dict(t => 1.0 for t in timestep_all)
+    time_diff = timediff ? read_gams_parameter("timediff_15min.inc") : Dict(t => 1.0 for t in timestep_all)
     
     # Return everything
     return (; priceareas, month, hours, timestep_all, trsp_all, trsp,

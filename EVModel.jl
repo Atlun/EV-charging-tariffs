@@ -136,11 +136,12 @@ function makemodel(hh_profile, flags)
     return model, params, vars, constraints
 end
 
-function runmodel(hh_profile=:BASE; tariffs=false, Monthly_Power_Cost=false, Common_Power_Cost=false, Annual_Power_Cost=false)
+function runmodel(hh_profile=:BASE; Monthly_Power_Cost=false, Common_Power_Cost=false, Annual_Power_Cost=false,
+                    tariffs=false, timediff=false, testrun=false)
     if tariffs
         Annual_Power_Cost = Monthly_Power_Cost = true
     end
-    flags = (; Annual_Power_Cost, Monthly_Power_Cost, Common_Power_Cost)
+    flags = (; Annual_Power_Cost, Monthly_Power_Cost, Common_Power_Cost, timediff, testrun)
     model, params, vars, constraints = makemodel(hh_profile, flags)
     optimize!(model)
     objective = objective_value(model)
