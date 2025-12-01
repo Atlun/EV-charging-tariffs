@@ -154,7 +154,7 @@ end
 
 function write_results(hh_profile, params, vars)
     (; timestep_all, trsp, priceareas, month, t2m, residential_demand, NumberOfCars) = params
-    (; V_PEVcharging_slow) = vars
+    (; V_PEVcharging_slow, V_PEV_need) = vars
     
     kWhtokW = 4.0 # Hardcoded as in makeconstraints
     
@@ -209,7 +209,7 @@ function write_results(hh_profile, params, vars)
         end
     end
     
-    mkdir("results")
+    !isdir("results") && mkdir("results")
     write_dict_csv("results/Monthly_fuse_common - $hh_profile.csv", Monthly_fuse_common, ["Month", "PriceArea", "Value"])
     write_dict_csv("results/Monthly_fuse_ind - $hh_profile.csv", Monthly_fuse_ind, ["Month", "PriceArea", "Car", "Value"])
     
@@ -220,6 +220,16 @@ function write_results(hh_profile, params, vars)
         println(io, "Timestep,Car,PriceArea,Value")
         for t in timestep_all, c in trsp, a in priceareas
             v = value(V_PEVcharging_slow[t, c, a])
+            if v > 1e-6 # Sparse export
+                println(io, "$t,$c,$a,$v")
+            end
+        end
+    end
+
+    open("results/V_PEV_need - $hh_profile.csv", "w") do io
+        println(io, "Timestep,Car,PriceArea,Value")
+        for t in timestep_all, c in trsp, a in priceareas
+            v = value(V_PEV_need[t, c, a])
             if v > 1e-6 # Sparse export
                 println(io, "$t,$c,$a,$v")
             end
