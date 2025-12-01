@@ -11,7 +11,7 @@
 *.csv
 *.lic
 /backup
-
+results/
 
 
 

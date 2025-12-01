@@ -146,13 +146,13 @@ function runmodel(hh_profile=:BASE; tariffs=false, Monthly_Power_Cost=false, Com
     objective = objective_value(model)
     println("Objective value: ", objective)
     
-    write_results(params, vars)
+    write_results(hh_profile, params, vars)
     
     println("Done.")
     return objective
 end
 
-function write_results(params, vars)
+function write_results(hh_profile, params, vars)
     (; timestep_all, trsp, priceareas, month, t2m, residential_demand, NumberOfCars) = params
     (; V_PEVcharging_slow) = vars
     
@@ -209,13 +209,14 @@ function write_results(params, vars)
         end
     end
     
-    write_dict_csv("Monthly_fuse_common.csv", Monthly_fuse_common, ["Month", "PriceArea", "Value"])
-    write_dict_csv("Monthly_fuse_ind.csv", Monthly_fuse_ind, ["Month", "PriceArea", "Car", "Value"])
+    mkdir("results")
+    write_dict_csv("results/Monthly_fuse_common - $hh_profile.csv", Monthly_fuse_common, ["Month", "PriceArea", "Value"])
+    write_dict_csv("results/Monthly_fuse_ind - $hh_profile.csv", Monthly_fuse_ind, ["Month", "PriceArea", "Car", "Value"])
     
     # Export V_PEVcharging_slow
     # This is large, maybe use DataFrame
     # Format: Timestep, Car, PriceArea, Value
-    open("V_PEVcharging_slow.csv", "w") do io
+    open("results/V_PEVcharging_slow - $hh_profile.csv", "w") do io
         println(io, "Timestep,Car,PriceArea,Value")
         for t in timestep_all, c in trsp, a in priceareas
             v = value(V_PEVcharging_slow[t, c, a])
