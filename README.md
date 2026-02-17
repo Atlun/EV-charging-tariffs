@@ -19,4 +19,3 @@ Annual_Power_Cost introduces a cost for the annual peak power per household
 Monthly_Power_Cost introduces a cost for the monthly peak power per household
 Common_Power_Cost introduces a cost for the combined monthly peak power of all households together
 Time_Differentiated changes so that the activated criteria above only take the daytime peak. It must therefore be combined with at least one of the criteria above. 
-<img width="739" height="411" alt="image" src="https://github.com/user-attachments/assets/e35e531d-edfd-4f27-a33f-8241a488c281" />
